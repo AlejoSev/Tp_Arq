@@ -29,8 +29,6 @@ module alu
 		input wire [NB_OP-1:0]		i_operation,
 		output reg [NB_OUTPUTS-1:0]	o_result);
 
-
-
 always@(*)begin
 	if(i_operation == 32)begin:_add
 		o_result = i_dato_a + i_dato_b;
