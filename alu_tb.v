@@ -1,3 +1,24 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 09/01/2021 08:54:10 PM
+// Design Name: 
+// Module Name: alu_tb
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
 module tb_alu;
     parameter NB_INPUTS = 8;
     parameter NB_OUTPUTS = 8;
@@ -11,27 +32,27 @@ module tb_alu;
     initial begin
         dato_a = 1;
         dato_b = 1;
-        operation = NB_OP'b100000;
+        operation = 6'b100000;
 
         #10
-        operation = NB_OP'b100010;
+        operation = 6'b100010;
 
         #10
-        operation = NB_OP'b100100;
+        operation = 6'b100100;
 
         #10
-        operation = NB_OP'b100101;
+        operation = 6'b100101;
 
         #10
-        operation = NB_OP'b100110;
+        operation = 6'b100110;
 
         #10
-        operation = NB_OP'b100111;
+        operation = 6'b100111;
 
         #10
         $finish;
     end
 
-    alu alu_instance(.i_dato_a(dato_a), .i_dato_b(dato_b), .i_operation(operation), o_result(result));
+    alu alu_instance(.i_dato_a(dato_a), .i_dato_b(dato_b), .i_operation(operation), .o_result(result));
 
 endmodule
