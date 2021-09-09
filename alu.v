@@ -46,10 +46,10 @@ always@(*)begin
 		o_result = i_dato_a ^ i_dato_b;
 	end
 	else if(i_operation == 3)begin:_sra
-		o_result = {NB_OP{1'b0}};
+		o_result = i_dato_a >>> i_dato_b;
 	end
 	else if(i_operation == 4)begin:_srl
-		o_result = {NB_OP{1'b0}};
+		o_result = i_dato_a >> i_dato_b;
 	end
 	else if(i_operation == 39)begin:_nor
 		o_result = ~(i_dato_a | i_dato_b);
