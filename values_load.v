@@ -1,24 +1,4 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 09/01/2021 08:52:58 PM
-// Design Name: 
-// Module Name: values_load
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
 
 module values_load
 	#(  parameter NB_INPUTS = 8,
@@ -50,7 +30,7 @@ always@(posedge i_clock)begin
             data_b <= i_switches;
         end
         if(i_buttons[2])begin
-            operation <= i_switches;
+            operation <= i_switches[NB_OP-1:0];
         end 
     end
 end
