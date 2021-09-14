@@ -24,14 +24,14 @@ module tb_alu;
     parameter NB_OUTPUTS = 8;
     parameter NB_OP = 6;
 
-    reg [NB_INPUTS-1:0]     dato_a;
-    reg [NB_INPUTS-1:0]     dato_b;
+    reg [NB_INPUTS-1:0]     data_a;
+    reg [NB_INPUTS-1:0]     data_b;
     reg [NB_OP-1:0]         operation;
     wire [NB_OUTPUTS-1:0]   result;
 
     initial begin
-        dato_a = 1;
-        dato_b = 1;
+        data_a = 1;
+        data_b = 1;
         operation = 6'b100000;
 
         #10
@@ -53,6 +53,9 @@ module tb_alu;
         $finish;
     end
 
-    alu alu_instance(.i_dato_a(dato_a), .i_dato_b(dato_b), .i_operation(operation), .o_result(result));
+    alu alu_instance(   .i_data_a(data_a),
+                        .i_dato_b(data_b),
+                        .i_operation(operation), 
+                        .o_result(result));
 
 endmodule
