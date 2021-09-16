@@ -5,10 +5,10 @@ module alu_tb;
     parameter NB_OUTPUTS = 8;
     parameter NB_OP = 6;
 
-    reg [NB_INPUTS-1:0]     data_a;
-    reg [NB_INPUTS-1:0]     data_b;
-    reg [NB_OP-1:0]         operation;
-    wire [NB_OUTPUTS-1:0]   result;
+    reg signed [NB_INPUTS-1:0]     data_a;
+    reg signed [NB_INPUTS-1:0]     data_b;
+    reg [NB_OP-1:0]                operation;
+    wire signed [NB_OUTPUTS-1:0]   result;
 
     initial begin
         data_a = 1;

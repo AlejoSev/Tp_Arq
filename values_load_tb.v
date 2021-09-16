@@ -8,9 +8,9 @@ module values_load_tb;
     reg                     clock;
     reg                     reset;
     reg  [2:0]              buttons;
-    reg  [NB_INPUTS-1:0]    switches;
-    wire [NB_OUTPUTS-1:0]   data_a;
-    wire [NB_OUTPUTS-1:0]   data_b;
+    reg  signed [NB_INPUTS-1:0]    switches;
+    wire signed [NB_OUTPUTS-1:0]   data_a;
+    wire signed [NB_OUTPUTS-1:0]   data_b;
     wire [NB_OP-1:0]        operation;
 
     initial begin

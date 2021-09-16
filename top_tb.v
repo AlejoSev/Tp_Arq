@@ -10,11 +10,11 @@ module top_tb;
     reg                     clock;
     reg                     reset;
     reg  [2:0]              buttons;
-    reg  [NB_INPUTS-1:0]    switches;
-    wire [NB_OUTPUTS-1:0]   leds;
+    reg  signed [NB_INPUTS-1:0]    switches;
+    wire signed [NB_OUTPUTS-1:0]   leds;
 
-    reg [NB_INPUTS-1:0] random_a;
-    reg [NB_INPUTS-1:0] random_b;
+    reg  [NB_INPUTS-1:0] random_a;
+    reg  [NB_INPUTS-1:0] random_b;
     reg [NB_OP-1:0]     operations [7:0];
 
     integer op_counter;
