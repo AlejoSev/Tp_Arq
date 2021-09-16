@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module tb_alu;
+module values_load_tb;
     parameter NB_INPUTS = 8;
     parameter NB_OUTPUTS = 8;
     parameter NB_OP = 6;

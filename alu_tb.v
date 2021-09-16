@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module tb_alu;
+module alu_tb;
     parameter NB_INPUTS = 8;
     parameter NB_OUTPUTS = 8;
     parameter NB_OP = 6;
@@ -31,11 +31,17 @@ module tb_alu;
         operation = 6'b100111;
 
         #10
+        operation = 6'b000011; //SRA
+
+        #10
+        operation = 6'b000010; //SRL
+
+        #10
         $finish;
     end
 
     alu alu_instance(   .i_data_a(data_a),
-                        .i_dato_b(data_b),
+                        .i_data_b(data_b),
                         .i_operation(operation), 
                         .o_result(result));
 
