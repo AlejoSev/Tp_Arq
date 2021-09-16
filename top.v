@@ -7,8 +7,8 @@ module top
 	(   input wire                      i_clock,
         input wire                      i_reset,
         input wire  [2:0]               i_buttons,
-        input wire  [NB_INPUTS-1:0]     i_switches,
-        output wire [NB_OUTPUTS-1:0]    o_leds);
+        input wire  signed [NB_INPUTS-1:0]     i_switches,
+        output wire signed [NB_OUTPUTS-1:0]    o_leds);
 
 wire [NB_INPUTS-1:0] data_a;
 wire [NB_INPUTS-1:0] data_b;

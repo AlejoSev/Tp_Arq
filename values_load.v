@@ -7,9 +7,9 @@ module values_load
 	(   input wire                  i_clock,
         input wire                  i_reset,
         input wire [2:0]            i_buttons,
-        input wire [NB_INPUTS-1:0]  i_switches,
-        output wire [NB_OUTPUTS-1:0] o_data_a,
-        output wire [NB_OUTPUTS-1:0] o_data_b,
+        input wire  signed [NB_INPUTS-1:0]  i_switches,
+        output wire signed [NB_OUTPUTS-1:0] o_data_a,
+        output wire signed [NB_OUTPUTS-1:0] o_data_b,
         output wire [NB_OP-1:0]      o_operation);
 
 reg [NB_OUTPUTS-1:0]    data_a;

@@ -98,16 +98,6 @@ module top_tb;
             $display("Test %d terminado", op_counter);
         end
 
-        // #10
-        // buttons = 3'd1; //Carga data_a
-        // #10
-        // buttons = 3'd2; //Carga data_b
-        // #10
-        // switches = 6'b100000; //Add
-        // buttons = 3'd4; //Carga operation
-        
-        // #10
-
         #10
         $finish;
     end
