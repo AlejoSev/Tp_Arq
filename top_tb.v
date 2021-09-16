@@ -5,6 +5,7 @@ module top_tb;
     parameter NB_OUTPUTS = 8;
     parameter NB_OP = 6;
     parameter N_tests = 10;
+   
 
     reg                     clock;
     reg                     reset;
@@ -36,8 +37,12 @@ module top_tb;
         operations[5] = 3;
         operations[6] = 2;
         operations[7] = 39;
+        
+         $display("--------------------------------------");
+          $display("Starting Tests");
 
-        for(op_counter = 0; op_counter <= 7; op_counter = op_counter+1)begin
+      for(op_counter = 0; op_counter <= (NB_OP+1); op_counter = op_counter+1)begin
+           
             for(tests_counter = 0; tests_counter <= N_tests; tests_counter = tests_counter+1)begin
                 #10
                 random_a = $urandom;
@@ -63,27 +68,27 @@ module top_tb;
                         $display("%b - %b = %b", random_a, random_b, leds);
                         $display("Error en la resta");
                         end
-                    36: if(random_a & random_b !== leds) begin
+                    36: if((random_a & random_b) !== leds) begin
                         $display("%b & %b = %b", random_a, random_b, leds);
                         $display("Error en la and");
                         end
-                    37: if(random_a | random_b !== leds) begin
-                        $display("%b | %b = %b", random_a, random_b, leds);
+                    37: if((random_a | random_b) !== leds) begin
+                        $display("%b | %b = %b)", random_a, random_b, leds);
                         $display("Error en la or");
                         end
-                    38: if(random_a ^ random_b !== leds) begin
+                    38: if((random_a ^ random_b) !== leds) begin
                         $display("%b ^ %b = %b", random_a, random_b, leds);
                         $display("Error en la xor");
                         end
-                    3: if(random_a >>> random_b !== leds) begin
+                    3: if((random_a >>> random_b) !== leds) begin
                         $display("%b >>> %b = %b", random_a, random_b, leds);
                         $display("Error en la sra");
                         end
-                    2: if(random_a >> random_b !== leds) begin
+                    2: if((random_a >> random_b) !== leds) begin
                         $display("%b >> %b = %b", random_a, random_b, leds);
                         $display("Error en la srl");
                         end
-                    39: if(~(random_a | random_b) !== leds) begin
+                    39: if((~(random_a | random_b)) != leds) begin
                         $display("~(%b | %b) = %b", random_a, random_b, leds);
                         $display("Error en la nor");
                         end
@@ -110,4 +115,9 @@ module top_tb;
     always #5 clock = ~clock;
 
     top top_instance(   .i_clock(clock), 
-                        .i_reset(reset),end
+                        .i_reset(reset),
+                        .i_buttons(buttons),
+                        .i_switches(switches),
+                        .o_leds(leds));
+
+endmodule

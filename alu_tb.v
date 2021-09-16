@@ -13,22 +13,22 @@ module alu_tb;
     initial begin
         data_a = 1;
         data_b = 1;
-        operation = 6'b100000;
+        operation = 6'b100000; //ADD
 
         #10
-        operation = 6'b100010;
+        operation = 6'b100010; //SUB
 
         #10
-        operation = 6'b100100;
+        operation = 6'b100100; //AND
 
         #10
-        operation = 6'b100101;
+        operation = 6'b100101; //OR
 
         #10
-        operation = 6'b100110;
+        operation = 6'b100110; //XOR
 
         #10
-        operation = 6'b100111;
+        operation = 6'b100111; //NOR
 
         #10
         operation = 6'b000011; //SRA
