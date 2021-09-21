@@ -13,8 +13,8 @@ module top_tb;
     reg  signed [NB_INPUTS-1:0]    switches;
     wire signed [NB_OUTPUTS-1:0]   leds;
 
-    reg  [NB_INPUTS-1:0] random_a;
-    reg  [NB_INPUTS-1:0] random_b;
+    reg signed  [NB_INPUTS-1:0] random_a;
+    reg signed  [NB_INPUTS-1:0] random_b;
     reg [NB_OP-1:0]     operations [7:0];
 
     integer op_counter;
@@ -57,40 +57,44 @@ module top_tb;
                 #10
                 switches = operations[op_counter];
                 buttons = 3'd4;
-
+                
                 #10
                 case(operations[op_counter])
                     32: if(random_a + random_b !== leds) begin
-                        $display("%b + %b = %b", random_a, random_b, leds);
-                        $display("Error en la suma");
+                            $display("%b + %b = %b", random_a, random_b, leds);
+                            $display("Error en la suma");
                         end
                     34: if(random_a - random_b !== leds) begin
-                        $display("%b - %b = %b", random_a, random_b, leds);
-                        $display("Error en la resta");
+                            $display("%b - %b = %b", random_a, random_b, leds);
+                            $display("Error en la resta");
                         end
                     36: if((random_a & random_b) !== leds) begin
-                        $display("%b & %b = %b", random_a, random_b, leds);
-                        $display("Error en la and");
+                            $display("%b & %b = %b", random_a, random_b, leds);
+                            $display("Error en la and");
                         end
                     37: if((random_a | random_b) !== leds) begin
-                        $display("%b | %b = %b)", random_a, random_b, leds);
-                        $display("Error en la or");
+                            $display("%b | %b = %b)", random_a, random_b, leds);
+                            $display("Error en la or");
                         end
                     38: if((random_a ^ random_b) !== leds) begin
-                        $display("%b ^ %b = %b", random_a, random_b, leds);
-                        $display("Error en la xor");
+                            $display("%b ^ %b = %b", random_a, random_b, leds);
+                            $display("Error en la xor");
                         end
-                    3: if((random_a >>> random_b) !== leds) begin
-                        $display("%b >>> %b = %b", random_a, random_b, leds);
-                        $display("Error en la sra");
+                    3:  begin
+                            random_b[NB_INPUTS-1] = 1'b0; //Quitamos el signo al dato B que nos indica cuantas veces shifteamos el dato A.
+                            
+                            if((random_a >>> random_b) !== leds) begin
+                                $display("%b >>> %b = %b but expected: %b", random_a, random_b, leds, (random_a >>> random_b));
+                                $display("Error en la sra");
+                            end
                         end
-                    2: if((random_a >> random_b) !== leds) begin
-                        $display("%b >> %b = %b", random_a, random_b, leds);
-                        $display("Error en la srl");
+                    2:  if((random_a >> random_b) !== leds) begin
+                            $display("%b >> %b = %b", random_a, random_b, leds);
+                            $display("Error en la srl");
                         end
                     39: if((~(random_a | random_b)) != leds) begin
-                        $display("~(%b | %b) = %b", random_a, random_b, leds);
-                        $display("Error en la nor");
+                            $display("~(%b | %b) = %b", random_a, random_b, leds);
+                            $display("Error en la nor");
                         end
                 endcase
             end
