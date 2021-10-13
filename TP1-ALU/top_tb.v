@@ -44,21 +44,21 @@ module top_tb;
       for(op_counter = 0; op_counter <= (NB_OP+1); op_counter = op_counter+1)begin
            
             for(tests_counter = 0; tests_counter <= N_tests; tests_counter = tests_counter+1)begin
-                #10
+                #100
                 random_a = $urandom;
                 switches = random_a;
                 buttons = 3'd1;
 
-                #10
+                #100
                 random_b = $urandom;
                 switches = random_b;
                 buttons = 3'd2;
 
-                #10
+                #100
                 switches = operations[op_counter];
                 buttons = 3'd4;
                 
-                #10
+                #100
                 case(operations[op_counter])
                     32: if(random_a + random_b !== leds) begin
                             $display("%b + %b = %b", random_a, random_b, leds);
@@ -102,11 +102,11 @@ module top_tb;
             $display("Test %d terminado", op_counter);
         end
 
-        #10
+        #100
         $finish;
     end
 
-    always #5 clock = ~clock;
+    always #50 clock = ~clock;
 
     top top_instance(   .i_clock(clock), 
                         .i_reset(reset),

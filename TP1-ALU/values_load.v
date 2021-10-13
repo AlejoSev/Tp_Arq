@@ -20,7 +20,7 @@ always@(posedge i_clock)begin
     if(i_reset)begin
         data_a      <= {NB_OUTPUTS{1'b0}};
         data_b      <= {NB_OUTPUTS{1'b0}};
-        operation   <= {NB_OUTPUTS{1'b0}};
+        operation   <= {NB_OP{1'b0}};
     end
     else begin
         if(i_buttons[0])begin
