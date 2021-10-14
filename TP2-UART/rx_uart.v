@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 module rx_uart
-    #(parameter NB_STATE      = 2,
+    #(parameter NB_STATE      = 3,
       parameter NB_COUNT      = 4,
       parameter NB_DATA_COUNT = 3,
       parameter NB_DATA       = 8,
@@ -12,17 +12,17 @@ module rx_uart
      output wire rx_done_tick,
      output wire [NB_DATA-1:0] o_data);
 
-localparam [NB_STATE - 1:0] STATE_WAIT    = 2'd0 ;
-localparam [NB_STATE - 1:0] STATE_START   = 2'd1 ;
-localparam [NB_STATE - 1:0] STATE_PHASE   = 2'd2 ;
-localparam [NB_STATE - 1:0] STATE_RECEIVE = 2'd3 ;
-localparam [NB_STATE - 1:0] STATE_STOP    = 2'd4 ;
+localparam [NB_STATE - 1:0] STATE_WAIT    = 3'd0 ;
+localparam [NB_STATE - 1:0] STATE_START   = 3'd1 ;
+localparam [NB_STATE - 1:0] STATE_PHASE   = 3'd2 ;
+localparam [NB_STATE - 1:0] STATE_RECEIVE = 3'd3 ;
+localparam [NB_STATE - 1:0] STATE_STOP    = 3'd4 ;
 localparam [NB_COUNT - 1:0] MID_STOP      = 4'd7 ;
 localparam [NB_COUNT - 1:0] END_STOP      = 4'd15;
 
-reg [NB_STATE      - 1:0] state;
-reg [NB_STATE      - 1:0] next state;
-reg [NB_COUNT      - 1:0] tick_counter; //s
+reg [NB_STATE - 1:0] state;
+reg [NB_STATE - 1:0] next state;
+reg [NB_COUNT - 1:0] tick_counter; //s
 reg [NB_DATA_COUNT - 1:0] data_counter;
 reg [NB_DATA       - 1:0] shiftreg; //data
 
@@ -48,43 +48,50 @@ always @(*) begin: next_state_logic
         end
         STATE_START: begin
             case (tick_counter)
-                MID_STOP: 
+                MID_STOP: begin
                     next_state   = STATE_PHASE;
                     tick_counter = {NB_COUNT{1'b0}}; //s
                     data_counter = {NB_DATA_COUNT{1'b0}}; //n
-                default:
+                end
+                default: begin
                     next_state   = STATE_START;
                     tick_counter = tick_counter + 1;
+                end
             endcase
         end
         STATE_PHASE: begin
             case (tick_counter)
-                END_STOP:
+                END_STOP: begin
                     next_state   = STATE_RECEIVE;
                     tick_counter = {NB_COUNT{1'b0}};
                     shiftreg = {i_rx, shiftreg[NB_DATA-1:1]};
-                default:
+                end
+                default: begin
                     next_state   = STATE_PHASE;
                     tick_counter = tick_counter + 1;
+                end
             endcase
         end
         STATE_RECEIVE: begin
             case (data_counter)
                 NB_DATA:
                     next_state = STATE_STOP;
-                default: 
+                default: begin
                     next_state   = STATE_PHASE;
                     data_counter = data_counter + 1;
+                end
             endcase
         end
         STATE_STOP: begin 
             case (tick_counter) //preguntar !!!!!!!!!!
-                N_STOP:
+                N_STOP: begin
                     next_state = STATE_WAIT;
                     rx_done_tick = 1;
-                default: 
+                end
+                default: begin
                     next_state = STATE_STOP;
                     tick_counter = tick_counter + 1;
+                end
             endcase
         end
         default:
