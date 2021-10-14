@@ -3,8 +3,8 @@
 module rx_uart
     #(parameter NB_STATE = 2,
       parameter NB_COUNT = 4,
-      parameter NB_DATA  = 3)
-      parameter N_STOP  = 2; //cantidad de bits de stop SB_TICK
+      parameter NB_DATA  = 3,
+      parameter N_STOP  = 2) //cantidad de bits de stop SB_TICK
     (input wire i_clock, // clock del baudrate generator
      input wire i_reset,
      input wire i_rx,
@@ -24,12 +24,21 @@ reg [NB_STATE - 1:0] next state;
 reg [NB_COUNT - 1:0] tick_counter; //s
 reg [NB_DATA  - 1:0] data_counter;
 
+always @(posedge i_clock)begin
+    if(i_reset)
+        state <= STATE_WAIT;
+    else 
+        state <= next_state;
+end
+
 always @(*) begin: next_state_logic
     case (state)
         STATE_WAIT: begin
             case (i_rx)
-                1'b0: 
-                    next_state = STATE_START;
+                1'b0: begin
+                    next_state   = STATE_START;
+                    tick_counter = 0;
+                end
                 default: 
                     next_state = STATE_WAIT;
             endcase
@@ -71,12 +80,27 @@ always @(*) begin: next_state_logic
     endcase
 end
 
-always @(posedge i_clock)begin
-    if(i_reset)
-        state <= STATE_WAIT;
-    else 
-        state <= next_state;
-end
 
+// always @(*) begin: next_state_logic
+//     case (state)
+//         STATE_WAIT: begin
+           
+//         end
+//         STATE_START: begin
+          
+//         end
+//         STATE_PHASE: begin
+            
+//         end
+//         STATE_RECEIVE: begin
+          
+//         end
+//         STATE_STOP: begin 
+           
+//         end
+//         default:
+          
+//     endcase
+// end
 
 endmodule
