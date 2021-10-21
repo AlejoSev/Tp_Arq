@@ -1,9 +1,9 @@
 `timescale 1ns / 1ps
 
-module baudrate_generator_tb;
+module rx_uart_tb;
     parameter NB_STATE        = 3;
     parameter NB_COUNT        = 4;
-    parameter NB_DATA_COUNT   = 3;
+    parameter NB_DATA_COUNT   = 4;
     parameter NB_DATA         = 8;
     parameter N_TICKS_TO_STOP = 30;
 
@@ -24,31 +24,55 @@ module baudrate_generator_tb;
         #50
         i_rx    = 1'b0; //start bit
 
-        #10
+        #160
         i_rx    = 1'b1;
-        #10
+        #160
         i_rx    = 1'b0;
-        #10
+        #160
         i_rx    = 1'b1;
-        #10
+        #160
         i_rx    = 1'b1;
-        #10
+        #160
         i_rx    = 1'b1;
-        #10
+        #160
         i_rx    = 1'b1;
-        #10
+        #160
         i_rx    = 1'b0;
-        #10
+        #160
         i_rx    = 1'b1;
-        #10
+        #160
         i_rx    = 1'b1; //stop bit1
-        #10
+        #160
+        i_rx    = 1'b1; //stop bit2
+        
+        #160
+        i_rx    = 1'b0; //start bit
+
+        #160
+        i_rx    = 1'b1;
+        #160
+        i_rx    = 1'b0;
+        #160
+        i_rx    = 1'b0;
+        #160
+        i_rx    = 1'b0;
+        #160
+        i_rx    = 1'b0;
+        #160
+        i_rx    = 1'b0;
+        #160
+        i_rx    = 1'b0;
+        #160
+        i_rx    = 1'b1;
+        #160
+        i_rx    = 1'b1; //stop bit1
+        #160
         i_rx    = 1'b1; //stop bit2
 
-        #10
+        #160
         i_rx    = 1'b1;
 
-        #10
+        #160
         i_rx    = 1'b1;
 
         #1000

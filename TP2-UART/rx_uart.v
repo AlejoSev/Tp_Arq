@@ -2,8 +2,8 @@
 
 module rx_uart
     #(parameter NB_STATE        = 3,
-      parameter NB_COUNT        = 4,
-      parameter NB_DATA_COUNT   = 3,
+      parameter NB_COUNT        = 5,
+      parameter NB_DATA_COUNT   = 4,
       parameter NB_DATA         = 8,
       parameter N_TICKS_TO_STOP = 30) //Cant. bits de stop * tick por bit (2 * 15)
     (input wire i_clock, // clock del baudrate generator
@@ -21,24 +21,27 @@ localparam [NB_COUNT - 1:0] MID_STOP      = 4'd7 ;
 localparam [NB_COUNT - 1:0] END_STOP      = 4'd15;
 
 reg [NB_STATE      - 1:0] state;
-reg [NB_STATE      - 1:0] next state;
+reg [NB_STATE      - 1:0] next_state;
 reg [NB_COUNT      - 1:0] tick_counter; //s
 reg [NB_DATA_COUNT - 1:0] data_counter;
 reg [NB_DATA       - 1:0] shiftreg; //data
 reg                       rx_done_tick;
 
 always @(posedge i_clock)begin
-    if(i_reset)
+    if(i_reset) begin
         state <= STATE_WAIT;
         tick_counter <= {NB_COUNT{1'b0}};
         data_counter <= {NB_DATA_COUNT{1'b0}};
-    else 
+        shiftreg     <= {NB_DATA{1'b0}};
+    end
+    else
         state <= next_state;
 
     case (state)
         STATE_WAIT: begin
             tick_counter <= {NB_COUNT{1'b0}};
             data_counter <= {NB_DATA_COUNT{1'b0}};
+            shiftreg     <= {NB_DATA{1'b0}};
             rx_done_tick <= 1'b0;
         end 
         STATE_START: begin
@@ -48,7 +51,7 @@ always @(posedge i_clock)begin
                     data_counter <= {NB_DATA_COUNT{1'b0}};
                 end
                 default:
-                    tick_counter <= tick_counter + 1:
+                    tick_counter <= tick_counter + 1;
             endcase
         end
         STATE_PHASE: begin
@@ -58,13 +61,13 @@ always @(posedge i_clock)begin
                     shiftreg <= {i_rx, shiftreg[NB_DATA-1:1]};
                 end
                 default:
-                    tick_counter <= tick_counter + 1:
+                    tick_counter <= tick_counter + 1;
             endcase
         end
         STATE_RECEIVE: begin
             if (data_counter < NB_DATA) begin
                 data_counter <= data_counter + 1;
-            end          
+            end   
         end
         STATE_STOP: begin
             case (tick_counter)
@@ -105,7 +108,7 @@ always @(*) begin: next_state_logic
         end
         STATE_RECEIVE: begin
             case (data_counter)
-                NB_DATA:
+                NB_DATA-1:
                     next_state = STATE_STOP;
                 default:
                     next_state   = STATE_PHASE;
