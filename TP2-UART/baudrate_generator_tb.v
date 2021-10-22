@@ -15,7 +15,7 @@ module baudrate_generator_tb;
         #20
         i_reset = 1'b0;
 
-        #1000
+        #1002
         $finish;
     end
 
