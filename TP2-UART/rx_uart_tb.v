@@ -8,7 +8,7 @@ module rx_uart_tb;
     parameter N_TICKS_TO_STOP = 30;
 
     reg i_clock; // clock del baudrate generator
-    reg i_s_tick;
+    wire i_s_tick;
     reg i_reset;
     reg i_rx;
     wire o_rx_done_tick;
@@ -25,67 +25,62 @@ module rx_uart_tb;
         #50
         i_rx    = 1'b0; //start bit
 
-        #(163*16*10)
+        #1640
         i_rx    = 1'b1;
-        #(163*16*10)
+        #1640
         i_rx    = 1'b0;
-        #(163*16*10)
+        #1640
         i_rx    = 1'b1;
-        #(163*16*10)
+        #1640
         i_rx    = 1'b1;
-        #(163*16*10)
+        #1640
         i_rx    = 1'b1;
-        #(163*16*10)
+        #1640
         i_rx    = 1'b1;
-        #(163*16*10)
+        #1640
         i_rx    = 1'b0;
-        #(163*16*10)
+        #1640
         i_rx    = 1'b1;
-        #(163*16*10)
+        #1640
         i_rx    = 1'b1; //stop bit1
-        #(163*16*10)
+        #1640
         i_rx    = 1'b1; //stop bit2
         
-        #(163*16*10)
+        #1640
         i_rx    = 1'b0; //start bit
 
-        #(163*16*10)
+        #1640
         i_rx    = 1'b1;
-        #(163*16*10)
+        #1640
         i_rx    = 1'b0;
-        #(163*16*10)
+        #1640
         i_rx    = 1'b0;
-        #(163*16*10)
+        #1640
         i_rx    = 1'b0;
-        #(163*16*10)
+        #1640
         i_rx    = 1'b0;
-        #(163*16*10)
+        #1640
         i_rx    = 1'b0;
-        #(163*16*10)
+        #1640
         i_rx    = 1'b0;
-        #(163*16*10)
+        #1640
         i_rx    = 1'b1;
-        #(163*16*10)
+        #1640
         i_rx    = 1'b1; //stop bit1
-        #(163*16*10)
+        #1640
         i_rx    = 1'b1; //stop bit2
 
-        #(163*16*10)
+        #1640
         i_rx    = 1'b1;
 
-        #(163*16*10)
+        #1640
         i_rx    = 1'b1;
 
+        #1000
+        $finish;
     end
 
     always #5 i_clock = ~i_clock;
-    
-    always begin
-        #(10*163)
-        i_s_tick = 1;
-        #10
-        i_s_tick = 0;
-    end
 
     rx_uart rx_uart_instance(.i_clock(i_clock),
                              .i_s_tick(i_s_tick),
@@ -93,5 +88,9 @@ module rx_uart_tb;
                              .i_rx(i_rx),
                              .o_rx_done_tick(o_rx_done_tick),
                              .o_data(o_data));
+                             
+    baudrate_generator baudrate_generator_instance(.i_clock(i_clock),
+                                                   .i_reset(i_reset),
+                                                   .o_br_clock(i_s_tick));
 
 endmodule

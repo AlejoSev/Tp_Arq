@@ -40,12 +40,10 @@ always @(posedge i_clock)begin
 
     case (state)
         STATE_WAIT: begin
-            if (i_s_tick)begin
-                tick_counter <= {NB_COUNT{1'b0}};
-                data_counter <= {NB_DATA_COUNT{1'b0}};
-                shiftreg     <= {NB_DATA{1'b0}};
-                rx_done_tick <= 1'b0;
-            end
+            tick_counter <= {NB_COUNT{1'b0}};
+            data_counter <= {NB_DATA_COUNT{1'b0}};
+            shiftreg     <= {NB_DATA{1'b0}};
+            rx_done_tick <= 1'b0;
         end 
         STATE_START: begin
             if (i_s_tick)begin
@@ -94,54 +92,44 @@ end
 always @(*) begin: next_state_logic
     case (state)
         STATE_WAIT: begin
-            if (i_s_tick)begin
-                case (i_rx)
-                    1'b0:
-                        next_state   = STATE_START;
-                    default: 
-                        next_state = STATE_WAIT;
-                endcase
-            end
+            case (i_rx)
+                1'b0:
+                    next_state   = STATE_START;
+                default: 
+                    next_state = STATE_WAIT;
+            endcase
         end
         STATE_START: begin
-            if(i_s_tick)begin
-                case (tick_counter)
-                    MID_STOP:
-                        next_state   = STATE_PHASE;
-                    default:
-                        next_state   = STATE_START;
-                endcase
-            end
+            case (tick_counter)
+                MID_STOP:
+                    next_state   = STATE_PHASE;
+                default:
+                    next_state   = STATE_START;
+            endcase
         end
         STATE_PHASE: begin
-            if(i_s_tick)begin
-                case (tick_counter)
-                    END_STOP:
-                        next_state   = STATE_RECEIVE;
-                    default:
-                        next_state   = STATE_PHASE;
-                endcase
-            end
+            case (tick_counter)
+                END_STOP:
+                    next_state   = STATE_RECEIVE;
+                default:
+                    next_state   = STATE_PHASE;
+            endcase
         end
         STATE_RECEIVE: begin
-            if(i_s_tick)begin
-                case (data_counter)
-                    NB_DATA-1:
-                        next_state = STATE_STOP;
-                    default:
-                        next_state   = STATE_PHASE;
-                endcase
-            end
+            case (data_counter)
+                NB_DATA-1:
+                    next_state = STATE_STOP;
+                default:
+                    next_state   = STATE_PHASE;
+            endcase
         end
-        STATE_STOP: begin 
-            if(i_s_tick)begin
-                case (tick_counter)
-                    N_TICKS_TO_STOP:
-                        next_state = STATE_WAIT;
-                    default:
-                        next_state = STATE_STOP;
-                endcase
-            end
+        STATE_STOP: begin
+            case (tick_counter)
+                N_TICKS_TO_STOP:
+                    next_state = STATE_WAIT;
+                default:
+                    next_state = STATE_STOP;
+            endcase
         end
     endcase
 end
