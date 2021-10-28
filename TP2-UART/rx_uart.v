@@ -40,43 +40,53 @@ always @(posedge i_clock)begin
 
     case (state)
         STATE_WAIT: begin
-            tick_counter <= {NB_COUNT{1'b0}};
-            data_counter <= {NB_DATA_COUNT{1'b0}};
-            shiftreg     <= {NB_DATA{1'b0}};
-            rx_done_tick <= 1'b0;
+            if (i_s_tick)begin
+                tick_counter <= {NB_COUNT{1'b0}};
+                data_counter <= {NB_DATA_COUNT{1'b0}};
+                shiftreg     <= {NB_DATA{1'b0}};
+                rx_done_tick <= 1'b0;
+            end
         end 
         STATE_START: begin
-            case (tick_counter)
-                MID_STOP: begin
-                    tick_counter <= {NB_COUNT{1'b0}};
-                    data_counter <= {NB_DATA_COUNT{1'b0}};
-                end
-                default:
-                    tick_counter <= tick_counter + 1;
-            endcase
+            if (i_s_tick)begin
+                case (tick_counter)
+                    MID_STOP: begin
+                        tick_counter <= {NB_COUNT{1'b0}};
+                        data_counter <= {NB_DATA_COUNT{1'b0}};
+                    end
+                    default:
+                        tick_counter <= tick_counter + 1;
+                endcase
+            end
         end
         STATE_PHASE: begin
-            case (tick_counter)
-                END_STOP: begin
-                    tick_counter <= {NB_COUNT{1'b0}};
-                    shiftreg <= {i_rx, shiftreg[NB_DATA-1:1]};
-                end
-                default:
-                    tick_counter <= tick_counter + 1;
-            endcase
+            if (i_s_tick)begin
+                case (tick_counter)
+                    END_STOP: begin
+                        tick_counter <= {NB_COUNT{1'b0}};
+                        shiftreg <= {i_rx, shiftreg[NB_DATA-1:1]};
+                    end
+                    default:
+                        tick_counter <= tick_counter + 1;
+                endcase
+            end
         end
         STATE_RECEIVE: begin
-            if (data_counter < NB_DATA) begin
-                data_counter <= data_counter + 1;
-            end   
+            if (i_s_tick)begin
+                if (data_counter < NB_DATA) begin
+                    data_counter <= data_counter + 1;
+                end
+            end
         end
         STATE_STOP: begin
-            case (tick_counter)
-                N_TICKS_TO_STOP:
-                    rx_done_tick <= 1'b1; 
-                default:
-                    tick_counter <= tick_counter + 1;
-            endcase
+            if (i_s_tick)begin
+                case (tick_counter)
+                    N_TICKS_TO_STOP:
+                        rx_done_tick <= 1'b1; 
+                    default:
+                        tick_counter <= tick_counter + 1;
+                endcase
+            end
         end
     endcase
 end
@@ -84,12 +94,14 @@ end
 always @(*) begin: next_state_logic
     case (state)
         STATE_WAIT: begin
-            case (i_rx)
-                1'b0:
-                    next_state   = STATE_START;
-                default: 
-                    next_state = STATE_WAIT;
-            endcase
+            if (i_s_tick)begin
+                case (i_rx)
+                    1'b0:
+                        next_state   = STATE_START;
+                    default: 
+                        next_state = STATE_WAIT;
+                endcase
+            end
         end
         STATE_START: begin
             if(i_s_tick)begin

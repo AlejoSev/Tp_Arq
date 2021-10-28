@@ -4,10 +4,10 @@ module uart_libro
         parameter SB_TICK = 16
     )
     (
-        input wire clk, reset,
-        input wire rx, s_tick,
-        output reg rx_done_tick,
-        output wire [7:0] dout
+        input wire i_clock, i_reset,
+        input wire i_rx, i_s_tick,
+        output reg o_rx_done_tick,
+        output wire [7:0] o_data
     );
 
 localparam [1:0] = 
@@ -16,81 +16,82 @@ localparam [1:0] =
     data = 2'b01,
     stop = 2'b11;
 
-reg [1:0] state_reg, state_next;
-reg [3:0] s_reg, s_next;
-reg [2:0] n_reg, n_next;
-reg [7:0] b_reg, b_next; //shiftreg
+reg [1:0] state, next_state;
+reg [3:0] tick_counter;
+reg [2:0] data_counter;
+reg [7:0] shiftreg; //shiftreg
 
-always @(posedge clk, posedge reset) begin
+always @(posedge i_clock) begin
 
-    if (reset) begin
+    if (i_reset) begin
         begin
-            state_reg <= idle;
-            s_reg <= 0;
-            n_reg <= 0;
-            b_reg <= 0;
+            state <= idle;
+            tick_counter <= 0;
+            data_counter <= 0;
+            shiftreg <= 0;
+            o_rx_done_tick <= 1'b0;
         end
     end
     else begin
-        state_reg <= state_next;
-        s_reg <= s_reg;
-        n_reg <= n_reg;
-        b_reg <= b_reg;
+        state <= next_state;
+        tick_counter <= tick_counter;
+        data_counter <= data_counter;
+        shiftreg <= shiftreg;
     end
 end
     
 always @(*) begin
 
-    state_next = state_reg;
-    rx_done_tick = 1'b0;
-    s_next = s_reg;
-    n_next = n_reg;
-    b_next = b_reg;
+    // next_state = state;
+    o_rx_done_tick = 1'b0;
+    // tick_counter = tick_counter;
+    // data_counter = data_counter;
+    // shiftreg = shiftreg;
 
-    case (state_reg)
+    case (state)
         idle: begin
-            if(~rx)begin
-                state_next = start;
-                s_next = 0;
+            if(~i_rx)begin
+                next_state = start;
+                tick_counter = 0;
             end
         end
         start: begin
-            if(s_tick) begin
-                if(s_reg == 7) begin
-                    state_next = data;
-                    s_next = 0;
-                    n_next = 0;
+            if(i_s_tick) begin
+                if(tick_counter == 7) begin
+                    next_state = data;
+                    tick_counter = 0;
+                    data_counter = 0;
                 end
                 else
-                    s_next = s_reg + 1;
+                    tick_counter = tick_counter + 1;
             end
         end
         data: begin
-            if(s_tick)begin
-                if(s_reg == 15) begin
-                    s_next = 0;
-                    b_next = {rx, b_reg[7:1]};
-                    if(n_reg == (DBIT-1))
-                        state_next = stop;
+            if(i_s_tick)begin
+                if(tick_counter == 15) begin
+                    tick_counter = 0;
+                    shiftreg = {i_rx, shiftreg[7:1]};
+                    if(data_counter == (DBIT-1))
+                        next_state = stop;
                     else
-                        n_next = n_reg + 1;
+                        data_counter = data_counter + 1;
                 end
                 else
-                    s_next = s_reg + 1;
+                    tick_counter = tick_counter + 1;
             end
         end
         stop: begin
-            if(s_tick) begin
-                if(s_reg == (SB_TICK - 1)) begin
-                    state_next = idle;
-                    rx_done_tick ) 1'b1;
+            if(i_s_tick) begin
+                if(tick_counter == (SB_TICK - 1)) begin
+                    next_state = idle;
+                    o_rx_done_tick ) 1'b1;
                 end
                 else
-                    s_next = s_reg +;
+                    tick_counter = tick_counter +;
             end
         end
     endcase   
 end
 
-assign dout = b_reg;
+assign o_data = shiftreg;
 endmodule
