@@ -19,68 +19,68 @@ module rx_uart_tb;
         i_clock = 1'b0;
         i_rx    = 1'b1;
         
-        #10
+        #52083
         i_reset = 1'b0;
 
-        #50
+        #52083
         i_rx    = 1'b0; //start bit
 
-        #1640
+        #52083
         i_rx    = 1'b1;
-        #1640
+        #52083
         i_rx    = 1'b0;
-        #1640
+        #52083
         i_rx    = 1'b1;
-        #1640
+        #52083
         i_rx    = 1'b1;
-        #1640
+        #52083
         i_rx    = 1'b1;
-        #1640
+        #52083
         i_rx    = 1'b1;
-        #1640
+        #52083
         i_rx    = 1'b0;
-        #1640
+        #52083
         i_rx    = 1'b1;
-        #1640
+        #52083
         i_rx    = 1'b1; //stop bit1
-        #1640
+        #52083
         i_rx    = 1'b1; //stop bit2
         
-        #1640
+        #52083
         i_rx    = 1'b0; //start bit
 
-        #1640
+        #52083
         i_rx    = 1'b1;
-        #1640
+        #52083
         i_rx    = 1'b0;
-        #1640
+        #52083
         i_rx    = 1'b0;
-        #1640
+        #52083
         i_rx    = 1'b0;
-        #1640
+        #52083
         i_rx    = 1'b0;
-        #1640
+        #52083
         i_rx    = 1'b0;
-        #1640
+        #52083
         i_rx    = 1'b0;
-        #1640
+        #52083
         i_rx    = 1'b1;
-        #1640
+        #52083
         i_rx    = 1'b1; //stop bit1
-        #1640
+        #52083
         i_rx    = 1'b1; //stop bit2
 
-        #1640
+        #52083
         i_rx    = 1'b1;
 
-        #1640
+        #52083
         i_rx    = 1'b1;
 
         #1000
         $finish;
     end
 
-    always #5 i_clock = ~i_clock;
+    always #10 i_clock = ~i_clock;
 
     rx_uart rx_uart_instance(.i_clock(i_clock),
                              .i_s_tick(i_s_tick),

@@ -17,6 +17,13 @@ always @(posedge i_clock) begin
         counter <= {NB_COUNT{1'b0}};
 end
 
-assign o_br_clock = (counter == N_TICKS)? 1'b1 : 1'b0;
+assign o_br_clock = ((counter==N_TICKS) && i_clock )? 1'b1 : 1'b0;
+//assign o_br_clock = (counter==N_TICKS)? 1'b1 : 1'b0;
     
 endmodule
+
+// 19200 baudrate (bits/segundo)
+// 16 ticks por baudio
+// clock 50 MHz
+// s_tick cada 19200*16 = 307200 ticks por segundo
+// 
