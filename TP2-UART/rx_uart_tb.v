@@ -80,12 +80,12 @@ module rx_uart_tb;
 
     always #10 i_clock = ~i_clock;
 
-    rx_uart rx_uart_instance(.i_clock(i_clock),
-                             .i_s_tick(i_s_tick_wire),
-                             .i_reset(i_reset),
-                             .i_rx(i_rx),
-                             .o_rx_done_tick(o_rx_done_tick),
-                             .o_data(o_data));
+    uart_libro uart_libro_instance( .i_clock(i_clock),
+                                    .i_s_tick(i_s_tick_wire),
+                                    .i_reset(i_reset),
+                                    .i_rx(i_rx),
+                                    .o_rx_done_tick(o_rx_done_tick),
+                                    .o_data(o_data));
                              
     baudrate_generator baudrate_generator_instance(.i_clock(i_clock),
                                                    .i_reset(i_reset),

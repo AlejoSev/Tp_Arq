@@ -29,13 +29,13 @@ reg [NB_DATA       - 1:0] shiftreg;     //data
 reg                       rx_done_tick;
 reg [1:0] soyUNreg; //borar
 
-// always @(posedge i_clock)begin
-//     if(i_reset) begin
-//         state <= STATE_WAIT;
-//     end
-//     else
-//         state <= next_state;
-// end
+always @(posedge i_clock)begin
+    if(i_reset) begin
+        state <= STATE_WAIT;
+    end
+    else
+        state <= next_state;
+end
 
 always @(posedge i_s_tick)begin
 
