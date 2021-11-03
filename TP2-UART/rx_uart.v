@@ -18,8 +18,8 @@ localparam [NB_STATE - 1:0] STATE_START   = 3'd1 ;
 localparam [NB_STATE - 1:0] STATE_PHASE   = 3'd2 ;
 localparam [NB_STATE - 1:0] STATE_RECEIVE = 3'd3 ;
 localparam [NB_STATE - 1:0] STATE_STOP    = 3'd4 ;
-localparam [NB_COUNT - 1:0] MID_STOP      = 4'd7 ;
-localparam [NB_COUNT - 1:0] END_STOP      = 4'd15;
+localparam [NB_COUNT - 1:0] MID_STOP      = 5'd7 ;
+localparam [NB_COUNT - 1:0] END_STOP      = 5'd15;
 
 reg [NB_STATE      - 1:0] state;
 reg [NB_STATE      - 1:0] next_state;
@@ -27,18 +27,30 @@ reg [NB_COUNT      - 1:0] tick_counter; //s
 reg [NB_DATA_COUNT - 1:0] data_counter;
 reg [NB_DATA       - 1:0] shiftreg;     //data
 reg                       rx_done_tick;
+reg [1:0] soyUNreg; //borar
 
-always @(posedge i_clock)begin
-    if(i_reset) begin
-        state <= STATE_WAIT;
+// always @(posedge i_clock)begin
+//     if(i_reset) begin
+//         state <= STATE_WAIT;
+//     end
+//     else
+//         state <= next_state;
+// end
+
+always @(posedge i_s_tick)begin
+
+    if(i_reset)begin
         tick_counter <= {NB_COUNT{1'b0}};
         data_counter <= {NB_DATA_COUNT{1'b0}};
         shiftreg     <= {NB_DATA{1'b0}};
+        soyUNreg <= 1'b0;
+        state <= STATE_WAIT;
+        
     end
-    else
+    else begin
         state <= next_state;
-
-    case (state)
+        soyUNreg <= soyUNreg ^ 1'b1;
+        case (state)
         STATE_WAIT: begin
             tick_counter <= {NB_COUNT{1'b0}};
             data_counter <= {NB_DATA_COUNT{1'b0}};
@@ -46,19 +58,16 @@ always @(posedge i_clock)begin
             rx_done_tick <= 1'b0;
         end 
         STATE_START: begin
-            if (i_s_tick)begin
-                case (tick_counter)
-                    MID_STOP: begin
-                        tick_counter <= {NB_COUNT{1'b0}};
-                        data_counter <= {NB_DATA_COUNT{1'b0}};
-                    end
-                    default:
-                        tick_counter <= tick_counter + 1;
-                endcase
-            end
+           
+            if(tick_counter == MID_STOP)begin
+                    tick_counter <= {NB_COUNT{1'b0}};
+                    data_counter <= {NB_DATA_COUNT{1'b0}};
+                end
+            else
+                tick_counter <= tick_counter + 1;
         end
         STATE_PHASE: begin
-            if (i_s_tick)begin
+            
                 case (tick_counter)
                     END_STOP: begin
                         tick_counter <= {NB_COUNT{1'b0}};
@@ -67,26 +76,28 @@ always @(posedge i_clock)begin
                     default:
                         tick_counter <= tick_counter + 1;
                 endcase
-            end
+            
         end
         STATE_RECEIVE: begin
-            if (i_s_tick)begin
-                if (data_counter < NB_DATA) begin
-                    data_counter <= data_counter + 1;
-                end
+            
+            if (data_counter < NB_DATA) begin
+                data_counter <= data_counter + 1;
             end
+        
         end
         STATE_STOP: begin
-            if (i_s_tick)begin
-                case (tick_counter)
-                    N_TICKS_TO_STOP:
-                        rx_done_tick <= 1'b1; 
-                    default:
-                        tick_counter <= tick_counter + 1;
-                endcase
-            end
+        
+            case (tick_counter)
+                N_TICKS_TO_STOP:
+                    rx_done_tick <= 1'b1; 
+                default:
+                    tick_counter <= tick_counter + 1;
+            endcase
+        
         end
     endcase
+    end
+  
 end
 
 always @(*) begin: next_state_logic

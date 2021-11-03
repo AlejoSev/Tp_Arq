@@ -1,5 +1,3 @@
-`timescale 1ns / 1ps
-
 module rx_uart_tb;
     parameter NB_STATE        = 3;
     parameter NB_COUNT        = 4;
@@ -8,7 +6,7 @@ module rx_uart_tb;
     parameter N_TICKS_TO_STOP = 30;
 
     reg i_clock; // clock del baudrate generator
-    wire i_s_tick;
+    wire i_s_tick_wire;
     reg i_reset;
     reg i_rx;
     wire o_rx_done_tick;
@@ -83,7 +81,7 @@ module rx_uart_tb;
     always #10 i_clock = ~i_clock;
 
     rx_uart rx_uart_instance(.i_clock(i_clock),
-                             .i_s_tick(i_s_tick),
+                             .i_s_tick(i_s_tick_wire),
                              .i_reset(i_reset),
                              .i_rx(i_rx),
                              .o_rx_done_tick(o_rx_done_tick),
@@ -91,6 +89,6 @@ module rx_uart_tb;
                              
     baudrate_generator baudrate_generator_instance(.i_clock(i_clock),
                                                    .i_reset(i_reset),
-                                                   .o_br_clock(i_s_tick));
+                                                   .o_br_clock(i_s_tick_wire));
 
 endmodule
