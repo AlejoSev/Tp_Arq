@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module tx_uart_tb;
+module top_tb;
     parameter DBIT      = 8;
     parameter NB_STATE  = 2;
     parameter SB_TICK   = 16;
@@ -14,8 +14,6 @@ module tx_uart_tb;
     wire o_rx_done_tick;
     wire o_tx_done_tick;
 
-    wire i_s_tick_wire;
-
     initial begin
         i_reset = 1'b1;
         i_clock = 1'b0;
@@ -24,7 +22,8 @@ module tx_uart_tb;
         i_reset = 1'b0;
 
         #1000
-        i_data = 8'b10101010;
+        i_data = 8'b10011001;
+        #1000
         i_tx_start = 1'b1;
         
         #40000

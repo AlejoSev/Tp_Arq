@@ -10,7 +10,7 @@ module top
         input wire i_clock,
         input wire i_reset,
         input wire i_tx_start,
-        input wire i_data,
+        input wire [NB_DATA-1:0] i_data,
 
         output wire [NB_DATA-1:0] o_data,
         output wire o_rx_done_tick,
