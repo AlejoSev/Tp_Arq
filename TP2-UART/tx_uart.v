@@ -7,10 +7,10 @@ module tx_uart
 (
     input wire i_clock,
     input wire i_reset,
-    input wire tx_start,
+    input wire i_tx_start,
     input wire i_s_tick,
-    input wire [DBIT-1:0] din,
-    output reg tx_done_tick,
+    input wire [DBIT-1:0] i_data,
+    output reg o_tx_done_tick,
     output wire o_tx
 );
 
@@ -44,7 +44,7 @@ end
 
 always @(*) begin
     state_next = state_reg;
-    tx_done_tick = 1'b0;
+    o_tx_done_tick = 1'b0;
     s_next = s_reg;
     n_next = n_reg;
     b_next = b_reg;
@@ -53,10 +53,10 @@ always @(*) begin
     case(state_reg)
         IDLE: begin
             tx_next = 1'b1;
-            if(tx_start) begin
+            if(i_tx_start) begin
                 state_next = START;
                 s_next = 0;
-                b_next = din;
+                b_next = i_data;
             end
         end
         START: begin
@@ -91,7 +91,7 @@ always @(*) begin
             if(i_s_tick) begin
                 if(s_reg == (SB_TICK -1)) begin
                     state_next = IDLE;
-                    tx_done_tick = 1'b1;
+                    o_tx_done_tick = 1'b1;
                 end
                 else
                     s_next = s_reg + 1;
