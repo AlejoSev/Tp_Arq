@@ -10,16 +10,13 @@ module top
         input wire                      i_clock,
         input wire                      i_reset,
         input wire                      i_rx,
-        // input wire  [2:0]               i_buttons,
-        // input wire  signed [NB_INPUTS-1:0]     i_switches,
-        // output wire signed [NB_OUTPUTS-1:0]    o_leds,
         output wire [NB_DATA-1:0] o_data,
         output wire o_rx_done_tick);
 
 wire i_s_tick_wire;
 
 
-uart_libro uart_libro_instance(.i_clock(i_clock),
+rx_uart rx_uart_instance(.i_clock(i_clock),
                             .i_s_tick(i_s_tick_wire),
                             .i_reset(i_reset),
                             .i_rx(i_rx),
