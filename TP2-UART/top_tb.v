@@ -47,7 +47,7 @@ module top_tb;
         i_rx    = 1'b0; //start bit
 
         #52083
-        i_rx    = 1'b1;
+        i_rx    = 1'b1; //10000001
         #52083
         i_rx    = 1'b0;
         #52083

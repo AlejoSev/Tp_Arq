@@ -1,128 +1,105 @@
 `timescale 1ns / 1ps
 
-module tx_uart
-    #(parameter NB_STATE        = 3,
-      parameter NB_COUNT        = 5,
-      parameter NB_DATA_COUNT   = 4,
-      parameter NB_DATA         = 8,
-      parameter N_TICKS_TO_STOP = 30) //Cant. bits de stop * tick por bit (2 * 15)
-    (input wire i_clock,
-     input wire i_reset,
-     input wire i_tx_start,
-     input wire [NB_DATA-1:0] din,
-     output wire o_tx_done_tick,
-     output wire o_tx);
+module tx_uart 
+#(parameter DBIT = 8,
+  parameter NB_STATE = 2,
+  parameter SB_TICK = 16)
+(
+    input wire i_clock,
+    input wire i_reset,
+    input wire tx_start,
+    input wire i_s_tick,
+    input wire [DBIT-1:0] din,
+    output reg tx_done_tick,
+    output wire o_tx
+);
 
-localparam [NB_STATE - 1:0] STATE_WAIT    = 3'd0 ;
-localparam [NB_STATE - 1:0] STATE_START   = 3'd1 ;
-localparam [NB_STATE - 1:0] STATE_PHASE   = 3'd2 ;
-localparam [NB_STATE - 1:0] STATE_RECEIVE = 3'd3 ;
-localparam [NB_STATE - 1:0] STATE_STOP    = 3'd4 ;
-localparam [NB_COUNT - 1:0] MID_STOP      = 4'd7 ;
-localparam [NB_COUNT - 1:0] END_STOP      = 4'd15;
+localparam [NB_STATE : 0 ] IDLE  = 2'b00;
+localparam [NB_STATE : 0 ] START = 2'b01;
+localparam [NB_STATE : 0 ] DATA  = 2'b10;
+localparam [NB_STATE : 0 ] STOP  = 2'b11;
 
-reg [NB_STATE      - 1:0] state;
-reg [NB_STATE      - 1:0] next_state;
-reg [NB_DATA_COUNT - 1:0] data_counter;
-reg                       tx_done_tick;
-reg                       tx;   
+reg [1:0] state_reg, state_next;
+reg [3:0] s_reg, s_next;
+reg [2:0] n_reg, n_next;
+reg [DBIT-1:0] b_reg, b_next;
+reg tx_reg, tx_next;
 
-always @(posedge i_clock)begin
-    if(i_reset) begin
-        state <= STATE_WAIT;
-        tx_done_tick <= 1'b0;
-        data_counter <= {NB_DATA_COUNT{1'b0}};
+always @(posedge i_clock) begin //le saque el posedge reset
+    if(i_reset)begin
+        state_reg <= IDLE;
+        s_reg <= 0;
+        n_reg <= 0;
+        b_reg <= 0;
+        tx_reg <= 1'b1;
     end
-    else
-        state <= next_state;
+    else begin
+        state_reg <= state_next;
+        s_reg <= s_next;
+        n_reg <= n_next;
+        b_reg <= b_next;
+        tx_reg <= tx_next;
+    end
+end
 
-    case (state)
-        STATE_WAIT: begin
-            data_counter <= {NB_DATA_COUNT{1'b0}};
-            tx_done_tick <= 1'b0;
-        end 
-        STATE_START: begin
-            case (tick_counter)
-                MID_STOP: begin
-                    tick_counter <= {NB_COUNT{1'b0}};
-                    data_counter <= {NB_DATA_COUNT{1'b0}};
+always @(*) begin
+    state_next = state_reg;
+    tx_done_tick = 1'b0;
+    s_next = s_reg;
+    n_next = n_reg;
+    b_next = b_reg;
+    tx_next = tx_reg;
+
+    case(state_reg)
+        IDLE: begin
+            tx_next = 1'b1;
+            if(tx_start) begin
+                state_next = START;
+                s_next = 0;
+                b_next = din;
+            end
+        end
+        START: begin
+            tx_next = 1'b0;
+            if(i_s_tick) begin
+                if(s_reg == 15) begin
+                    state_next = DATA;
+                    s_next = 0;
+                    n_next = 0;
                 end
-                default:
-                    tick_counter <= tick_counter + 1;
-            endcase
+                else
+                    s_next = s_reg + 1;
+            end 
         end
-        STATE_PHASE: begin
-            case (tick_counter)
-                END_STOP: begin
-                    tick_counter <= {NB_COUNT{1'b0}};
-                    shiftreg <= {i_rx, shiftreg[NB_DATA-1:1]};
+        DATA: begin
+            tx_next = b_reg[0];
+            if(i_s_tick)begin
+                if(s_reg == 15)begin
+                    s_next = 0;
+                    b_next = b_reg >> 1;
+                    if(n_reg == (DBIT - 1))
+                        state_next = STOP;
+                    else
+                        n_next = n_reg + 1;
                 end
-                default:
-                    tick_counter <= tick_counter + 1;
-            endcase
+                else
+                    s_next = s_reg + 1;
+            end
         end
-        STATE_RECEIVE: begin
-            if (data_counter < NB_DATA) begin
-                data_counter <= data_counter + 1;
-            end   
-        end
-        STATE_STOP: begin
-            case (tick_counter)
-                N_TICKS_TO_STOP:
-                    rx_done_tick <= 1'b1; 
-                default:
-                    tick_counter <= tick_counter + 1;
-            endcase
+        STOP: begin
+            tx_next = 1'b1;
+            if(i_s_tick) begin
+                if(s_reg == (SB_TICK -1)) begin
+                    state_next = IDLE;
+                    tx_done_tick = 1'b1;
+                end
+                else
+                    s_next = s_reg + 1;
+            end
         end
     endcase
 end
 
-always @(*) begin: next_state_logic
-    case (state)
-        STATE_WAIT: begin
-            case (i_rx)
-                1'b0:
-                    next_state   = STATE_START;
-                default: 
-                    next_state = STATE_WAIT;
-            endcase
-        end
-        STATE_START: begin
-            case (tick_counter)
-                MID_STOP:
-                    next_state   = STATE_PHASE;
-                default:
-                    next_state   = STATE_START;
-            endcase
-        end
-        STATE_PHASE: begin
-            case (tick_counter)
-                END_STOP:
-                    next_state   = STATE_RECEIVE;
-                default:
-                    next_state   = STATE_PHASE;
-            endcase
-        end
-        STATE_RECEIVE: begin
-            case (data_counter)
-                NB_DATA-1:
-                    next_state = STATE_STOP;
-                default:
-                    next_state   = STATE_PHASE;
-            endcase
-        end
-        STATE_STOP: begin 
-            case (tick_counter)
-                N_TICKS_TO_STOP:
-                    next_state = STATE_WAIT;
-                default:
-                    next_state = STATE_STOP;
-            endcase
-        end
-    endcase
-end
-
-assign o_tx_done_tick = tx_done_tick;
-assign o_tx           = tx;
+assign o_tx = tx_reg;
 
 endmodule
