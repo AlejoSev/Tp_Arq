@@ -1,77 +1,34 @@
-module top_tb;
-    parameter NB_STATE        = 3;
-    parameter NB_COUNT        = 4;
-    parameter NB_DATA_COUNT   = 4;
-    parameter NB_DATA         = 8;
-    parameter N_TICKS_TO_STOP = 30;
+`timescale 1ns / 1ps
+
+module tx_uart_tb;
+    parameter DBIT      = 8;
+    parameter NB_STATE  = 2;
+    parameter SB_TICK   = 16;
 
     reg i_clock; // clock del baudrate generator
     reg i_reset;
-    reg i_rx;
+    reg i_tx_start;
+    reg [DBIT-1:0] i_data;
+
+    wire [DBIT-1:0] o_data;
     wire o_rx_done_tick;
-    wire [NB_DATA-1:0] o_data;
+    wire o_tx_done_tick;
+
+    wire i_s_tick_wire;
 
     initial begin
         i_reset = 1'b1;
         i_clock = 1'b0;
-        i_rx    = 1'b1;
-        
-        #52083
+
+        #1000
         i_reset = 1'b0;
 
-        #52083
-        i_rx    = 1'b0; //start bit
-
-        #52083
-        i_rx    = 1'b1;
-        #52083
-        i_rx    = 1'b0;
-        #52083
-        i_rx    = 1'b1;
-        #52083
-        i_rx    = 1'b1;
-        #52083
-        i_rx    = 1'b1;
-        #52083
-        i_rx    = 1'b1;
-        #52083
-        i_rx    = 1'b0;
-        #52083
-        i_rx    = 1'b1;
-        #52083
-        i_rx    = 1'b1; //stop bit1
-        #52083
-        i_rx    = 1'b1; //stop bit2
+        #1000
+        i_data = 8'b10101010;
+        i_tx_start = 1'b1;
         
-        #52083
-        i_rx    = 1'b0; //start bit
-
-        #52083
-        i_rx    = 1'b1; //10000001
-        #52083
-        i_rx    = 1'b0;
-        #52083
-        i_rx    = 1'b0;
-        #52083
-        i_rx    = 1'b0;
-        #52083
-        i_rx    = 1'b0;
-        #52083
-        i_rx    = 1'b0;
-        #52083
-        i_rx    = 1'b0;
-        #52083
-        i_rx    = 1'b1;
-        #52083
-        i_rx    = 1'b1; //stop bit1
-        #52083
-        i_rx    = 1'b1; //stop bit2
-
-        #52083
-        i_rx    = 1'b1;
-
-        #52083
-        i_rx    = 1'b1;
+        #40000
+        i_tx_start = 1'b0;
 
         #1000
         $finish;
@@ -79,9 +36,12 @@ module top_tb;
 
     always #10 i_clock = ~i_clock;
 
-top top_instance(.i_clock(i_clock),
-                 .i_reset(i_reset),
-                 .i_rx(i_rx),
-                 .o_data(o_data),
-                 .o_rx_done_tick(o_rx_done_tick));
+    top top_instance(.i_clock(i_clock),
+                     .i_reset(i_reset),
+                     .i_tx_start(i_tx_start),
+                     .i_data(i_data),
+                     .o_data(o_data),
+                     .o_rx_done_tick(o_rx_done_tick),
+                     .o_tx_done_tick(o_tx_done_tick));
+
 endmodule
