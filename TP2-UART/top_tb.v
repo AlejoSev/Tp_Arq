@@ -29,7 +29,7 @@ module top_tb;
         #40000
         i_tx_start = 1'b0;
 
-        #1000
+        #600000
         $finish;
     end
 
