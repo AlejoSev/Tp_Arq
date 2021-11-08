@@ -7,6 +7,7 @@ module values_load
         parameter NB_COUNT = 2)
 	(   input wire                  i_clock,
         input wire                  i_reset,
+        input wire                  i_valid, //rx_done
         input wire  signed [NB_INPUTS-1:0]  i_data,
         output wire signed [NB_OUTPUTS-1:0] o_data_a,
         output wire signed [NB_OUTPUTS-1:0] o_data_b,
@@ -25,20 +26,23 @@ always@(posedge i_clock)begin
         counter     <= {NB_COUNT{1'b0}};
     end
     else begin
-        if(counter < 3) begin
-            if(counter == 0)begin
-                data_a <= i_switches;
+        if(i_valid) begin 
+
+            if(counter < 3) begin
+                if(counter == 0)begin
+                    data_a <= i_switches;
+                end
+                if(counter == 1)begin
+                    data_b <= i_switches;
+                end
+                if(counter == 2)begin
+                    operation <= i_switches[NB_OP-1:0];
+                end 
+            counter <= counter + 1;
             end
-            if(counter == 1)begin
-                data_b <= i_switches;
-            end
-            if(counter == 2)begin
-                operation <= i_switches[NB_OP-1:0];
-            end 
-        counter <= counter + 1;
+            else
+                counter <= 0;
         end
-        else
-            counter <= 0;
     end
 end
 
