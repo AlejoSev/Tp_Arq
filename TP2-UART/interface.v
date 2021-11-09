@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module values_load
+module interface
 	#(  parameter NB_INPUTS = 8,
         parameter NB_OUTPUTS = 8,
         parameter NB_OP = 6,
@@ -16,7 +16,7 @@ module values_load
 reg [NB_OUTPUTS-1:0]    data_a;
 reg [NB_OUTPUTS-1:0]    data_b;
 reg [NB_OP-1:0]         operation;
-reg [NB_COUNT-1:0] counter;
+reg [NB_COUNT-1:0]      counter;
 
 always@(posedge i_clock)begin
     if(i_reset)begin
@@ -27,22 +27,21 @@ always@(posedge i_clock)begin
     end
     else begin
         if(i_valid) begin 
-
-            if(counter < 3) begin
-                if(counter == 0)begin
-                    data_a <= i_switches;
-                end
-                if(counter == 1)begin
-                    data_b <= i_switches;
-                end
-                if(counter == 2)begin
-                    operation <= i_switches[NB_OP-1:0];
-                end 
-            counter <= counter + 1;
+            if(counter == 0)begin
+                data_a <= i_data;
             end
-            else
-                counter <= 0;
+            if(counter == 1)begin
+                data_b <= i_data;
+            end
+            if(counter == 2)begin
+                operation <= i_data[NB_OP-1:0];
+            end
+
+            counter <= counter + 1;
         end
+
+        if(counter == 3)
+            counter <= 0;
     end
 end
 

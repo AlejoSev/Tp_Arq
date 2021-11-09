@@ -10,9 +10,7 @@ module top_tb;
     reg i_tx_start;
     reg [DBIT-1:0] i_data;
 
-    wire [DBIT-1:0] o_data;
-    wire o_rx_done_tick;
-    wire o_tx_done_tick;
+    wire [DBIT-1:0] o_result;
 
     initial begin
         i_reset = 1'b1;
@@ -22,11 +20,24 @@ module top_tb;
         i_reset = 1'b0;
 
         #1000
-        i_data = 8'b10011001;
-        #1000
+        i_data = 8'b01010101;
+        #100
         i_tx_start = 1'b1;
-        
-        #40000
+        #100
+        i_tx_start = 1'b0;
+
+        #540000
+        i_data = 8'b00000001;
+        #100
+        i_tx_start = 1'b1;
+        #100
+        i_tx_start = 1'b0;
+
+        #540000
+        i_data = 8'd32;
+        #100
+        i_tx_start = 1'b1;
+        #100
         i_tx_start = 1'b0;
 
         #600000
@@ -39,8 +50,6 @@ module top_tb;
                      .i_reset(i_reset),
                      .i_tx_start(i_tx_start),
                      .i_data(i_data),
-                     .o_data(o_data),
-                     .o_rx_done_tick(o_rx_done_tick),
-                     .o_tx_done_tick(o_tx_done_tick));
+                     .o_result(o_result));
 
 endmodule
