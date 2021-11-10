@@ -10,7 +10,7 @@ module top_tb;
     reg i_tx_start;
     reg [DBIT-1:0] i_data;
 
-    wire [DBIT-1:0] o_result;
+    wire o_tx_2;
 
     initial begin
         i_reset = 1'b1;
@@ -50,6 +50,6 @@ module top_tb;
                      .i_reset(i_reset),
                      .i_tx_start(i_tx_start),
                      .i_data(i_data),
-                     .o_result(o_result));
+                     .o_tx_2(o_tx_2));
 
 endmodule
