@@ -11,18 +11,20 @@ module top
         input wire i_reset,
         input wire i_tx_start,
         input wire [NB_DATA-1:0] i_data,
-
-        output wire [NB_DATA-1:0] o_result);
+        output wire o_tx_2);
 
 wire i_s_tick_wire;
 wire rx_tx_wire;
 wire o_tx_done_tick;
+wire o_tx_done_tick_2;
 wire o_rx_done_tick;
+wire o_transmit;
 
 wire [NB_DATA-1:0] o_data;
 wire [NB_DATA-1:0] o_data_a;
 wire [NB_DATA-1:0] o_data_b;
 wire [NB_OP-1:0]   o_operation;
+wire [NB_DATA-1:0] o_result;
 
 rx_uart rx_uart_instance(.i_clock(i_clock),
                          .i_s_tick(i_s_tick_wire),
@@ -31,13 +33,21 @@ rx_uart rx_uart_instance(.i_clock(i_clock),
                          .o_rx_done_tick(o_rx_done_tick),
                          .o_data(o_data));
 
-tx_uart tx_uart_instance(.i_clock(i_clock),
+tx_uart tx_uart_instance_1(.i_clock(i_clock),
                          .i_reset(i_reset),
                          .i_tx_start(i_tx_start),
                          .i_s_tick(i_s_tick_wire),
                          .i_data(i_data),
                          .o_tx_done_tick(o_tx_done_tick),
                          .o_tx(rx_tx_wire));
+
+tx_uart tx_uart_instance_2(.i_clock(i_clock),
+                         .i_reset(i_reset),
+                         .i_tx_start(o_transmit),//
+                         .i_s_tick(i_s_tick_wire),
+                         .i_data(o_result),
+                         .o_tx_done_tick(o_tx_done_tick_2),
+                         .o_tx(o_tx_2));                       
                             
 baudrate_generator baudrate_generator_instance(.i_clock(i_clock),
                                                 .i_reset(i_reset),
@@ -49,7 +59,8 @@ interface interface_instance(.i_clock(i_clock),
                              .i_data(o_data),
                              .o_data_a(o_data_a),
                              .o_data_b(o_data_b),
-                             .o_operation(o_operation));
+                             .o_operation(o_operation),
+                             .o_transmit(o_transmit));
 
 alu alu_instance(.i_data_a(o_data_a),
                  .i_data_b(o_data_b),
