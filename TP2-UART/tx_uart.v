@@ -19,82 +19,82 @@ localparam [NB_STATE : 0 ] START = 2'b01;
 localparam [NB_STATE : 0 ] DATA  = 2'b10;
 localparam [NB_STATE : 0 ] STOP  = 2'b11;
 
-reg [1:0] state_reg, state_next;
-reg [3:0] s_reg, s_next;
-reg [2:0] n_reg, n_next;
-reg [DBIT-1:0] b_reg, b_next;
+reg [1:0] state, next_state;
+reg [3:0] tick_counter, next_tick_counter;
+reg [2:0] data_counter, next_data_counter;
+reg [DBIT-1:0] shiftreg, next_shiftreg;
 reg tx_reg, tx_next;
 
 always @(posedge i_clock) begin //le saque el posedge reset
     if(i_reset)begin
-        state_reg <= IDLE;
-        s_reg <= 0;
-        n_reg <= 0;
-        b_reg <= 0;
+        state <= IDLE;
+        tick_counter <= 0;
+        data_counter <= 0;
+        shiftreg <= 0;
         tx_reg <= 1'b1;
     end
     else begin
-        state_reg <= state_next;
-        s_reg <= s_next;
-        n_reg <= n_next;
-        b_reg <= b_next;
+        state <= next_state;
+        tick_counter <= next_tick_counter;
+        data_counter <= next_data_counter;
+        shiftreg <= next_shiftreg;
         tx_reg <= tx_next;
     end
 end
 
 always @(*) begin
-    state_next = state_reg;
+    next_state = state;
     o_tx_done_tick = 1'b0;
-    s_next = s_reg;
-    n_next = n_reg;
-    b_next = b_reg;
+    next_tick_counter = tick_counter;
+    next_data_counter = data_counter;
+    next_shiftreg = shiftreg;
     tx_next = tx_reg;
 
-    case(state_reg)
+    case(state)
         IDLE: begin
             tx_next = 1'b1;
             if(i_tx_start) begin
-                state_next = START;
-                s_next = 0;
-                b_next = i_data;
+                next_state = START;
+                next_tick_counter = 0;
+                next_shiftreg = i_data;
             end
         end
         START: begin
             tx_next = 1'b0;
             if(i_s_tick) begin
-                if(s_reg == 15) begin
-                    state_next = DATA;
-                    s_next = 0;
-                    n_next = 0;
+                if(tick_counter == 15) begin
+                    next_state = DATA;
+                    next_tick_counter = 0;
+                    next_data_counter = 0;
                 end
                 else
-                    s_next = s_reg + 1;
+                    next_tick_counter = tick_counter + 1;
             end 
         end
         DATA: begin
-            tx_next = b_reg[0];
+            tx_next = shiftreg[0];
             if(i_s_tick)begin
-                if(s_reg == 15)begin
-                    s_next = 0;
-                    b_next = b_reg >> 1;
-                    if(n_reg == (DBIT - 1))
-                        state_next = STOP;
+                if(tick_counter == 15)begin
+                    next_tick_counter = 0;
+                    next_shiftreg = shiftreg >> 1;
+                    if(data_counter == (DBIT - 1))
+                        next_state = STOP;
                     else
-                        n_next = n_reg + 1;
+                        next_data_counter = data_counter + 1;
                 end
                 else
-                    s_next = s_reg + 1;
+                    next_tick_counter = tick_counter + 1;
             end
         end
         STOP: begin
             tx_next = 1'b1;
             if(i_s_tick) begin
-                if(s_reg == (SB_TICK -1)) begin
-                    state_next = IDLE;
+                if(tick_counter == (SB_TICK -1)) begin
+                    next_state = IDLE;
                     o_tx_done_tick = 1'b1;
                 end
                 else
-                    s_next = s_reg + 1;
+                    next_tick_counter = tick_counter + 1;
             end
         end
     endcase
