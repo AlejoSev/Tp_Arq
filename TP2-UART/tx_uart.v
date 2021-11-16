@@ -30,7 +30,11 @@ reg [2:0] data_counter, next_data_counter;
 reg [DBIT-1:0] shiftreg, next_shiftreg;
 reg tx_reg, tx_next;
 
-
+//borrar
+assign test_state = state;
+assign test_tick_counter = tick_counter;
+assign test_data_counter = data_counter;
+assign test_shiftreg = shiftreg;
 
 always @(posedge i_clock) begin //le saque el posedge reset
     if(i_reset)begin
@@ -96,7 +100,7 @@ always @(*) begin
         STOP: begin
             tx_next = 1'b1;
             if(i_s_tick) begin
-                if(tick_counter == (SB_TICK -1)) begin
+                if(tick_counter == 4'b1111) begin
                     next_state = IDLE;
                     o_tx_done_tick = 1'b1;
                 end

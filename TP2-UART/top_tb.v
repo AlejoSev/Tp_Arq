@@ -16,13 +16,15 @@ module top_tb;
         i_reset = 1'b1;
         i_clock = 1'b0;
 
-        #1000
-        i_reset = 1'b0;
+
 
         #1000
         i_data = 8'b01010101;
+
         #100
         i_tx_start = 1'b1;
+        #1000
+        i_reset = 1'b0;
         #100
         i_tx_start = 1'b0;
 
