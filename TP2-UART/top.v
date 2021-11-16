@@ -11,6 +11,11 @@ module top
         input wire i_reset,
         input wire i_tx_start,
         input wire [NB_DATA-1:0] i_data,
+        output wire[NB_DATA-1:0] o_result_test,
+        output wire[NB_DATA-1:0] o_dataA_test,
+        output wire[NB_DATA-1:0] o_dataB_test,
+        output wire[NB_DATA-1:0] o_op_test,
+        output wire[NB_DATA-1:0] o_data_rx_interface_test,
         output wire o_tx_2);
 
 wire i_s_tick_wire;
@@ -25,6 +30,12 @@ wire [NB_DATA-1:0] o_data_a;
 wire [NB_DATA-1:0] o_data_b;
 wire [NB_OP-1:0]   o_operation;
 wire [NB_DATA-1:0] o_result;
+
+assign o_result_test = o_result;
+assign o_dataA_test = o_data_a;
+assign o_dataB_test = o_data_b;
+assign o_op_test = o_operation;
+assign o_data_rx_interface_test = o_data;
 
 rx_uart rx_uart_instance(.i_clock(i_clock),
                          .i_s_tick(i_s_tick_wire),

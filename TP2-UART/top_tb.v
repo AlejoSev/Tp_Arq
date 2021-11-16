@@ -11,6 +11,16 @@ module top_tb;
     reg [DBIT-1:0] i_data;
 
     wire o_tx_2;
+    wire [DBIT-1:0] o_result_test;
+    wire [DBIT-1:0] o_dataA_test;
+    wire [DBIT-1:0] o_dataB_test;
+    wire [DBIT-1:0] o_op_test;
+    wire [DBIT-1:0] o_data_rx_interface_test;
+
+
+//wire [DBIT-1:0] tb_alu_result;
+//assign tb_alu_result = top_tb.top_instance.rx_uart_instance.shiftreg;
+
 
     initial begin
         i_reset = 1'b1;
@@ -21,21 +31,21 @@ module top_tb;
 
         #1000
         i_data = 8'b01010101;
-        #100
+        #1000
         i_tx_start = 1'b1;
         #100
         i_tx_start = 1'b0;
 
         #540000
         i_data = 8'b00000001;
-        #100
+        #1000
         i_tx_start = 1'b1;
         #100
         i_tx_start = 1'b0;
 
         #540000
         i_data = 8'd32;
-        #100
+        #1000
         i_tx_start = 1'b1;
         #100
         i_tx_start = 1'b0;
@@ -50,6 +60,11 @@ module top_tb;
                      .i_reset(i_reset),
                      .i_tx_start(i_tx_start),
                      .i_data(i_data),
-                     .o_tx_2(o_tx_2));
+                     .o_tx_2(o_tx_2),
+                     .o_result_test(o_result_test),
+                     .o_dataA_test(o_dataA_test),
+                     .o_dataB_test(o_dataB_test),
+                     .o_op_test(o_data_test),
+                     .o_data_rx_interface_test(o_data_rx_interface_test));
 
 endmodule
