@@ -11,7 +11,12 @@ module tx_uart
     input wire i_s_tick,
     input wire [DBIT-1:0] i_data,
     output reg o_tx_done_tick,
-    output wire o_tx
+    output wire o_tx,
+    //borrar
+    output wire [1:0] test_state,
+    output wire [3:0] test_tick_counter,
+    output wire [2:0] test_data_counter,
+    output wire [DBIT-1:0] test_shiftreg
 );
 
 localparam [NB_STATE : 0 ] IDLE  = 2'b00;
@@ -24,6 +29,8 @@ reg [3:0] tick_counter, next_tick_counter;
 reg [2:0] data_counter, next_data_counter;
 reg [DBIT-1:0] shiftreg, next_shiftreg;
 reg tx_reg, tx_next;
+
+
 
 always @(posedge i_clock) begin //le saque el posedge reset
     if(i_reset)begin
