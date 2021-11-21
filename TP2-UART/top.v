@@ -9,63 +9,30 @@ module top
 	(
         input wire i_clock,
         input wire i_reset,
-        input wire i_data_rx,
-        // output wire[NB_DATA-1:0] o_result_test,
-        // output wire[NB_DATA-1:0] o_dataA_test,
-        // output wire[NB_DATA-1:0] o_dataB_test,
-        // output wire[NB_DATA-1:0] o_op_test,
-        // output wire[NB_DATA-1:0] o_data_rx_interface_test,
-        output wire o_tx);
+        input wire i_rx,
+        output wire o_tx,
+        output wire o_tx_done_tick
+        );
 
-wire i_s_tick_wire;
-wire o_tx_done_tick;
-wire o_rx_done_tick;
-wire o_transmit;
-
-wire [NB_DATA-1:0] o_data;
-wire [NB_DATA-1:0] o_data_a;
-wire [NB_DATA-1:0] o_data_b;
-wire [NB_OP-1:0]   o_operation;
-wire [NB_DATA-1:0] o_result;
-
-assign o_result_test = o_result;
-assign o_dataA_test = o_data_a;
-assign o_dataB_test = o_data_b;
-assign o_op_test = o_operation;
+wire [NB_DATA-1:0] result_wire;
+wire [NB_DATA-1:0] o_data_A_wire;
+wire [NB_DATA-1:0] o_data_B_wire;
+wire [NB_OP-1:0]   o_op_wire;
 
 
-rx_uart rx_uart_instance(.i_clock(i_clock),
-                         .i_s_tick(i_s_tick_wire),
-                         .i_reset(i_reset),
-                         .i_rx(i_data_rx),
-                         .o_rx_done_tick(o_rx_done_tick),
-                         .o_data(o_data));
+UART UART_instance(.i_clock(i_clock),
+                   .i_reset(i_reset),
+                   .i_result(result_wire),
+                   .i_rx(i_rx),
+                   .o_tx(o_tx),
+                   .o_tx_done_tick(o_tx_done_tick),
+                   .o_data_A(o_data_A_wire),
+                   .o_data_B(o_data_B_wire),
+                   .o_operation(o_op_wire));
 
-
-tx_uart tx_uart_instance_2(.i_clock(i_clock),
-                         .i_reset(i_reset),
-                         .i_tx_start(o_transmit),
-                         .i_s_tick(i_s_tick_wire),
-                         .i_data(o_result),
-                         .o_tx_done_tick(o_tx_done_tick),
-                         .o_tx(o_tx));                       
-                            
-baudrate_generator baudrate_generator_instance(.i_clock(i_clock),
-                                                .i_reset(i_reset),
-                                                .o_br_clock(i_s_tick_wire));
-
-interface interface_instance(.i_clock(i_clock),
-                             .i_reset(i_reset),
-                             .i_valid(o_rx_done_tick),
-                             .i_data(o_data),
-                             .o_data_a(o_data_a),
-                             .o_data_b(o_data_b),
-                             .o_operation(o_operation),
-                             .o_transmit(o_transmit));
-
-alu alu_instance(.i_data_a(o_data_a),
-                 .i_data_b(o_data_b),
-                 .i_operation(o_operation),
-                 .o_result(o_result));
+alu alu_instance(.i_data_a(o_data_A_wire),
+                 .i_data_b(o_data_B_wire),
+                 .i_operation(o_op_wire),
+                 .o_result(result_wire));
 
 endmodule
