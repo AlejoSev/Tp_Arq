@@ -17,18 +17,29 @@ module top
 wire [NB_DATA-1:0] result_wire;
 wire [NB_DATA-1:0] o_data_A_wire;
 wire [NB_DATA-1:0] o_data_B_wire;
-wire [NB_OP-1:0]   o_op_wire;
-
+wire [NB_OP  -1:0] o_op_wire;
+wire [NB_DATA-1:0] data_wire;
+wire rx_done_tick_wire;
+wire tx_start_wire;
 
 UART UART_instance(.i_clock(i_clock),
-                   .i_reset(i_reset),
-                   .i_result(result_wire),
-                   .i_rx(i_rx),
-                   .o_tx(o_tx),
-                   .o_tx_done_tick(o_tx_done_tick),
-                   .o_data_A(o_data_A_wire),
-                   .o_data_B(o_data_B_wire),
-                   .o_operation(o_op_wire));
+		   .i_reset(i_reset),
+		   .i_rx(i_rx),
+		   .i_tx(result_wire), //from ALU:
+		   .i_tx_start(tx_start_wire),
+		   .o_rx(data_wire),
+		   .o_rx_done_tick(rx_done_tick_wire),
+		   .o_tx(o_tx),
+		   .o_tx_done_tick(o_tx_done_tick));
+
+interface interface_instance(.i_clock(i_clock),
+                             .i_reset(i_reset),
+                             .i_valid(rx_done_tick_wire),
+                             .i_data(data_wire),
+                             .o_data_a(o_data_A_wire),
+                             .o_data_b(o_data_B_wire),
+                             .o_operation(o_op_wire),
+                             .o_transmit(tx_start_wire));
 
 alu alu_instance(.i_data_a(o_data_A_wire),
                  .i_data_b(o_data_B_wire),
