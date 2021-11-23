@@ -16,6 +16,7 @@ module top_tb;
     reg i_tx_start_test;
     reg [NB_DATA-1:0]i_data_test;
     wire i_s_tick_wire_test;
+    wire o_tx_test;
 
 
 
@@ -75,7 +76,7 @@ tx_uart tx_test(.i_clock(i_clock),
                 .i_s_tick(i_s_tick_wire_test),
                 .i_data(i_data_test),
                 .o_tx_done_tick(o_tx_done_tick),
-                .o_tx(o_tx));                       
+                .o_tx(o_tx_test));                       
                             
 baudrate_generator bg_test(.i_clock(i_clock),
                            .i_reset(i_reset),
@@ -83,7 +84,7 @@ baudrate_generator bg_test(.i_clock(i_clock),
 
 top top_instance(.i_clock(i_clock),
                  .i_reset(i_reset),
-                 .i_rx(i_rx),
+                 .i_rx(o_tx_test),
                  .o_tx(o_tx),
                  .o_tx_done_tick(o_tx_done_tick)
                 );

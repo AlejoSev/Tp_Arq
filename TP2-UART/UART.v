@@ -6,7 +6,7 @@ module UART
 		(
 		input wire i_clock,
 		input wire i_reset,
-		input wire i_result, //from ALU
+		input wire [NB_DATA-1:0] i_result, //from ALU:
 		input wire i_rx,
 		output wire o_tx,
 		output wire o_tx_done_tick,
